@@ -1,0 +1,74 @@
+version: '3'
+services:
+  car-service:
+    build: ./car-service
+    ports:
+      - "8090:8090"
+    depends_on:
+      eureka:
+        condition: service_started
+      db:
+        condition: service_started
+
+
+
+  db:
+    image: postgres
+    container_name: postgres-bazaTest
+    environment:
+      POSTGRES_DB: bazaTest
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      PGDATA: /data/postgres
+    volumes:
+      - ./bazaTest:/data/postgres
+    expose:
+      - 5432
+    ports:
+      - '5432:5432'
+
+    healthcheck:
+      test: [ "CMD-SHELL", "database_ready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+  config-server:
+    build: ./config-server
+    ports:
+      - "8888:8888"
+    healthcheck:
+      test: [ "CMD-SHELL", "config_ready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+
+  eureka:
+    build: ./eureka
+    ports:
+      - "8761:8761"
+    healthcheck:
+      test: [ "CMD-SHELL", "registry_ready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      config-server:
+        condition: service_started
+
+
+
+  gateway:
+    build: ./gateway
+    ports:
+      - "8081:8081"
+    links:
+      - car-service
+    depends_on:
+      eureka:
+        condition: service_started
+
+
