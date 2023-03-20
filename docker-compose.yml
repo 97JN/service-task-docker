@@ -4,17 +4,17 @@ services:
     build: ./car-service
     ports:
       - "8090:8090"
+    environment:
+      - eureka.client.serviceUrl.defaultZone=http://eurekaa:8761/eureka/
     depends_on:
-      eureka:
-        condition: service_started
       db:
-        condition: service_started
+        condition: service_healthy
 
 
 
   db:
     image: postgres
-    container_name: postgres-bazaTest
+    container_name: db
     environment:
       POSTGRES_DB: bazaTest
       POSTGRES_USER: postgres
@@ -25,36 +25,31 @@ services:
     expose:
       - 5432
     ports:
-      - '5432:5432'
-
+      - '5438:5432'
     healthcheck:
-      test: [ "CMD-SHELL", "database_ready" ]
+      test: [ "CMD-SHELL", "pg_isready","-d","bazaTest", "-U", "postgres" ]
       interval: 10s
       timeout: 5s
       retries: 5
+    depends_on:
+      eurekaa:
+        condition: service_started
 
 
   config-server:
     build: ./config-server
     ports:
       - "8888:8888"
-    healthcheck:
-      test: [ "CMD-SHELL", "config_ready" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
 
 
-  eureka:
+
+  eurekaa:
     build: ./eureka
     ports:
       - "8761:8761"
     healthcheck:
-      test: [ "CMD-SHELL", "registry_ready" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      test: "exit 0"
     depends_on:
       config-server:
         condition: service_started
@@ -65,10 +60,14 @@ services:
     build: ./gateway
     ports:
       - "8081:8081"
+    environment:
+      - eureka.client.serviceUrl.defaultZone=http://eurekaa:8761/eureka/
     links:
       - car-service
     depends_on:
-      eureka:
+      eurekaa:
+        condition: service_healthy
+      car-service:
         condition: service_started
 
 
