@@ -9,7 +9,7 @@ services:
       - eureka.client.serviceUrl.defaultZone=http://registry-eureka:8761/eureka/
       - eureka.instance.hostname=localhost
     depends_on:
-      - db-postgres
+      - "db-postgres"
 
 
 
@@ -65,8 +65,12 @@ services:
     environment:
       - eureka.client.serviceUrl.defaultZone=http://registry-eureka:8761/eureka/
       - eureka.instance.hostname=localhost
+
+
     links:
-      - car-service
+      - "car-service"
+    depends_on:
+      - "car-service"
 
 
 

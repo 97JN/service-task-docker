@@ -9,7 +9,8 @@ spring:
     config:
       uri: http://localhost:8888
       fail-fast: true
-#  data:
+
+  #  data:
 #    postgres:
 #      host: localhost
 #      port: 5432
@@ -31,9 +32,12 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQL81Dialect
 
-#eureka:
-#  instance:
-#    preferIpAddress: true
-#    instance-id: ${spring.application.name}:${spring.application.instance_id:${server.port}}
+eureka:
+  instance:
+    preferIpAddress: false
+
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${server.port}}
+
 #    ribbon:
 #      listOfServers: http://localhost:8090
+

@@ -9,18 +9,19 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
-@RestController
+
+@RequestMapping
 //@RequestMapping("/cars")
 public class CarController {
 
     private CarService carService;
 
-//    @Value("${eureka.instance.instance-id}")
-//    private String instanceId;
+    @Value("${eureka.instance.instance-id}")
+    private String instanceId;
 
     @GetMapping("/")
     public String startPage(){
-        return "working.. " ;//+instanceId;
+        return "working.. "+instanceId ;
     }
 
 

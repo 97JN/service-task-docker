@@ -9,6 +9,9 @@ spring:
       uri: http://localhost:8888
       fail-fast: true
     gateway:
+      discovery:
+        locator:
+          enabled: true
       routes:
         - id: car-service
           uri: lb://car-service
